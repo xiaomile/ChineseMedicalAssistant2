@@ -51,9 +51,12 @@ def prepare_generation_config():
     return generation_config
 
 
+system_meta_instruction = (
+    """<|System|>:您是一位非常专业的的中医药学教授。您始终根据提问者的问题提供准确、全面和详细的答案。"""
+)
 user_prompt = "<|User|>:{user}\n"
 robot_prompt = "<|Bot|>:{robot}<eoa>\n"
-cur_query_prompt = "<|User|>:{user}<eoh>\n<|Bot|>:"
+cur_query_prompt = "<|User|>:{user}\n<|Bot|>:"
 
 
 def combine_history(prompt):
@@ -68,39 +71,8 @@ def combine_history(prompt):
         else:
             raise RuntimeError
         total_prompt += cur_prompt
-    total_prompt = total_prompt + cur_query_prompt.replace("{user}", prompt)
+    total_prompt = system_meta_instruction + total_prompt + cur_query_prompt.replace("{user}", prompt)
     return total_prompt
-
-# 由于不再使用json字符串格式，所以不再需要这两个输出转换函数
-def convertMessage(cur_Message):
-    try:
-        new_message = json.loads(cur_Message)
-        # print(new_message)
-        if "question_type" in new_message.keys():
-            if new_message["question_type"] == "smell":
-                return new_message["name"]+"的气味是"+new_message["answer"]
-            elif new_message["question_type"] == "alias":
-                return new_message["name"]+"的别名是"+new_message["answer"]
-            elif new_message["question_type"] == "part":
-                return new_message["name"]+"所属的部是"+new_message["answer"]
-            elif new_message["question_type"] == "cure":
-                return new_message["name"]+"的功效是"+new_message["answer"]
-            elif new_message["question_type"] == "symptom":
-                return "治疗"+new_message["name"]+"的药方有"+new_message["answer"]
-            else:
-                return new_message["answer"]
-        else:
-            return new_message["answer"]
-    except Exception as e:
-        print(str(e))
-        return cur_Message
-
-# 由于不再使用json字符串格式，所以不再需要这两个输出转换函数
-def preprocessMessage(message):
-    if '"answer": "' in message:
-        return message[message.find('"answer": "')+len('"answer": "'):].replace('"}','')
-    else:
-        return ""
     
 def main():
     # torch.cuda.empty_cache()
