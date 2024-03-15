@@ -21,7 +21,7 @@ logger = logging.get_logger(__name__)
 
 from openxlab.model import download
 
-download(model_repo='xiaomile/ChineseMedicalAssistant_internlm2_1_8b', output='xiaomile')
+download(model_repo='xiaomile/ChineseMedicalAssistant_internlm2', output='xiaomile')
 
 def on_btn_click():
     del st.session_state.messages
